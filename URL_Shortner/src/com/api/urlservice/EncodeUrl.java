@@ -34,15 +34,15 @@ public class EncodeUrl {
 			System.err.println(e.getMessage());
 		}
 		
-		int hitCount = checkEntryInDatabase(url);
-		
-		if(hitCount>0) {
-			updateHitCounter(url,hitCount);
+		boolean ifEntryPresent = checkEntryInDatabase(url);
+		if(ifEntryPresent) {
+			return Response.ok("URL is already present.").build();
 		}
 		else{
 			setEntryInDatabase(url, encodedUrl.substring(5, 12));
+			return Response.ok(postData).build();
 		}
-		return Response.ok(postData).build();
+		
 		
 	}
 	
@@ -68,7 +68,7 @@ public class EncodeUrl {
 		}
 	}
 	
-	private synchronized int checkEntryInDatabase(final String Url) {
+	private synchronized boolean checkEntryInDatabase(final String Url) {
 		final String CHECK_ENTRY_QUERY = "SELECT COUNT FROM url_info WHERE url = ?;";
 		try {
 			DatabaseConnector dbconn = new DatabaseConnector();
@@ -77,11 +77,10 @@ public class EncodeUrl {
 			preparedStmt.setString(1, Url);
 			ResultSet rs = preparedStmt.executeQuery();
 			if (!rs.next()) {
-				return 0;
+				return false;
 			}else{
 				do{
-					int hitCount = rs.getInt("count");
-					return hitCount;
+					return true;
 				  }while (rs.next());
 			}
 			
@@ -89,26 +88,7 @@ public class EncodeUrl {
 			System.out.println("Got Exception!");
 			System.err.println(e.getMessage());
 		}
-		return 0;
+		return false;
 		
 	}
-	
-	private synchronized void updateHitCounter(final String url, int hitCount) {
-		final String UPDATE_HIT_COUNTER = "UPDATE url_info SET COUNT = ?, accessed_on = ?  WHERE url = ?;";
-		try {
-			DatabaseConnector dbconn = new DatabaseConnector();
-			Connection conn = dbconn.getConnection();
-			Timestamp accessedOn = new Timestamp(System.currentTimeMillis());
-			PreparedStatement preparedStmt = conn.prepareStatement(UPDATE_HIT_COUNTER);
-			preparedStmt.setInt(1, hitCount+1);
-			preparedStmt.setTimestamp(2, accessedOn);
-			preparedStmt.setString(3, url);
-			preparedStmt.execute();
-			conn.close();
-		}catch (Exception e) {
-			System.out.println("Got Exception!");
-			System.err.println(e.getMessage());
-		}
-	}
-	
 }
