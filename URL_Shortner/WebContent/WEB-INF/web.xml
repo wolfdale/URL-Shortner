@@ -25,6 +25,10 @@
 		<servlet-name>EncodeUrl</servlet-name>
 		<servlet-class>com.api.urlservice.EncodeUrl</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>DecodeUrl</servlet-name>
+		<servlet-class>com.api.urlservice.DecodeUrl</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>URL_Shortner</servlet-name>
 		<url-pattern>/*</url-pattern>

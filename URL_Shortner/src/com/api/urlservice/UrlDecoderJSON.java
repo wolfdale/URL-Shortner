@@ -1,13 +1,22 @@
 package com.api.urlservice;
 
+import java.sql.Timestamp;
+
 public class UrlDecoderJSON {
 	private String url;
 	private String shortUrl;
-	private String createdOn;
-	private String accessedOn;
+	private Timestamp createdOn;
+	private Timestamp accessedOn;
 	private String fetchedVia;
-	private String count;
+	private int count;
+	private boolean entryPresent;
 	
+	public boolean isEntryPresent() {
+		return entryPresent;
+	}
+	public void setEntryPresent(boolean entryPresent) {
+		this.entryPresent = entryPresent;
+	}
 	public String getUrl() {
 		return url;
 	}
@@ -20,28 +29,29 @@ public class UrlDecoderJSON {
 	public void setShortUrl(String shortUrl) {
 		this.shortUrl = shortUrl;
 	}
-	public String getCreatedOn() {
-		return createdOn;
-	}
-	public void setCreatedOn(String createdOn) {
-		this.createdOn = createdOn;
-	}
-	public String getAccessedOn() {
-		return accessedOn;
-	}
-	public void setAccessedOn(String accessedOn) {
-		this.accessedOn = accessedOn;
-	}
+	
 	public String getFetchedVia() {
 		return fetchedVia;
 	}
 	public void setFetchedVia(String fetchedVia) {
 		this.fetchedVia = fetchedVia;
 	}
-	public String getCount() {
+	public int getCount() {
 		return count;
 	}
-	public void setCount(String count) {
+	public void setCount(int count) {
 		this.count = count;
+	}
+	public Timestamp getCreatedOn() {
+		return createdOn;
+	}
+	public void setCreatedOn(Timestamp createdOn) {
+		this.createdOn = createdOn;
+	}
+	public Timestamp getAccessedOn() {
+		return accessedOn;
+	}
+	public void setAccessedOn(Timestamp accessedOn) {
+		this.accessedOn = accessedOn;
 	}
 }

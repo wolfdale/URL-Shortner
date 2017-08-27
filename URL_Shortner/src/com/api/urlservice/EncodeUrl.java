@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -21,8 +22,9 @@ import com.api.dao.DatabaseConnector;
 public class EncodeUrl {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response encodeUrlService(UrlEncoderJSON postData) {
-		String url = postData.getUrl();
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response encodeUrlService(UrlEncodeDecodeJSON postData) {
+		String url = postData.getURL();
 		String encodedUrl = null;
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
@@ -40,11 +42,11 @@ public class EncodeUrl {
 		else{
 			setEntryInDatabase(url, encodedUrl.substring(5, 12));
 		}
-		return Response.ok().build();
+		return Response.ok(postData).build();
 		
 	}
 	
-	private void setEntryInDatabase(final String url, final String encodedUrl) {
+	private synchronized void setEntryInDatabase(final String url, final String encodedUrl) {
 		Timestamp createdOn = new Timestamp(System.currentTimeMillis());
 		final String BUILD_ENTRY_SQL_QUERY = "INSERT INTO url_info (url,short_url,created_on,accessed_on,count)"
 											 + "VALUES(?,?,?,?,?);";
@@ -66,7 +68,7 @@ public class EncodeUrl {
 		}
 	}
 	
-	private int checkEntryInDatabase(final String Url) {
+	private synchronized int checkEntryInDatabase(final String Url) {
 		final String CHECK_ENTRY_QUERY = "SELECT COUNT FROM url_info WHERE url = ?;";
 		try {
 			DatabaseConnector dbconn = new DatabaseConnector();
@@ -91,7 +93,7 @@ public class EncodeUrl {
 		
 	}
 	
-	private void updateHitCounter(final String url, int hitCount) {
+	private synchronized void updateHitCounter(final String url, int hitCount) {
 		final String UPDATE_HIT_COUNTER = "UPDATE url_info SET COUNT = ?, accessed_on = ?  WHERE url = ?;";
 		try {
 			DatabaseConnector dbconn = new DatabaseConnector();
@@ -108,25 +110,5 @@ public class EncodeUrl {
 			System.err.println(e.getMessage());
 		}
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 }

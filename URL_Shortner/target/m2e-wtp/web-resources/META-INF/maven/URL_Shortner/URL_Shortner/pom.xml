@@ -64,6 +64,10 @@
 			<groupId>commons-digester</groupId>
 			<artifactId>commons-digester</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -101,6 +105,11 @@
 				<groupId>commons-digester</groupId>
 				<artifactId>commons-digester</artifactId>
 				<version>2.1</version>
+			</dependency>
+			<dependency>
+				<groupId>redis.clients</groupId>
+				<artifactId>jedis</artifactId>
+				<version>2.9.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
