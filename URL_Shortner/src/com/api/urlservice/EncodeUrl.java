@@ -36,11 +36,15 @@ public class EncodeUrl {
 		
 		boolean ifEntryPresent = checkEntryInDatabase(url);
 		if(ifEntryPresent) {
-			return Response.ok("URL is already present.").build();
+			ErrorHandler err = new ErrorHandler();
+			err.setErrMsg("URL is already present.");
+			return Response.ok(err).build();
 		}
 		else{
 			setEntryInDatabase(url, encodedUrl.substring(5, 12));
-			return Response.ok(postData).build();
+			EncodeUrlResponse sendResponse = new EncodeUrlResponse();
+			sendResponse.setEncodedUrl(encodedUrl.substring(5,12));
+			return Response.ok(sendResponse).build();
 		}
 		
 		
