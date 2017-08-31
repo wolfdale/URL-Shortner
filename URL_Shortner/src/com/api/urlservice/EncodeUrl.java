@@ -16,6 +16,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.api.dao.DatabaseConnector;
+import com.api.utils.EncodeUrlResponse;
+import com.api.utils.ErrorHandler;
+import com.api.utils.UrlEncodeDecodeJSON;
 
 
 @Path("/encode")
@@ -33,7 +36,7 @@ public class EncodeUrl {
 		}catch (NoSuchAlgorithmException e) {
 			System.err.println(e.getMessage());
 		}
-		
+	
 		boolean ifEntryPresent = checkEntryInDatabase(url);
 		
 		if(ifEntryPresent) {
@@ -84,6 +87,7 @@ public class EncodeUrl {
 		}
 	}
 	
+	//Refactor this code for error handling
 	private synchronized boolean checkEntryInDatabase(final String Url) {
 		final String CHECK_ENTRY_QUERY = "SELECT COUNT FROM url_info WHERE url = ?;";
 		try {
