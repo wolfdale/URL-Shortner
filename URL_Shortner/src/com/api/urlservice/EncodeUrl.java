@@ -35,22 +35,30 @@ public class EncodeUrl {
 		}
 		
 		boolean ifEntryPresent = checkEntryInDatabase(url);
+		
 		if(ifEntryPresent) {
 			ErrorHandler err = new ErrorHandler();
 			err.setErrMsg("URL is already present.");
 			return Response.ok(err).build();
 		}
 		else{
-			setEntryInDatabase(url, encodedUrl.substring(5, 12));
-			EncodeUrlResponse sendResponse = new EncodeUrlResponse();
-			sendResponse.setEncodedUrl(encodedUrl.substring(5,12));
-			return Response.ok(sendResponse).build();
+			boolean status = setEntryInDatabase(url, encodedUrl.substring(5, 12));
+			if(status) {
+				EncodeUrlResponse sendResponse = new EncodeUrlResponse();
+				sendResponse.setEncodedUrl(encodedUrl.substring(5,12));
+				return Response.ok(sendResponse).build();
+			}
+			else {
+				ErrorHandler err = new ErrorHandler();
+				err.setErrMsg("DB Error has occured.");
+				return Response.ok(err).build();
+			}
 		}
-		
 		
 	}
 	
-	private synchronized void setEntryInDatabase(final String url, final String encodedUrl) {
+	private synchronized boolean setEntryInDatabase(final String url, final String encodedUrl) {
+		boolean queryStatus = false;
 		Timestamp createdOn = new Timestamp(System.currentTimeMillis());
 		final String BUILD_ENTRY_SQL_QUERY = "INSERT INTO url_info (url,short_url,created_on,accessed_on,count)"
 											 + "VALUES(?,?,?,?,?);";
@@ -66,9 +74,13 @@ public class EncodeUrl {
 			preparedStmt.setInt(5, 1);
 			preparedStmt.execute();
 			conn.close();
+			queryStatus = true;
+			return queryStatus;
 		}catch (Exception e) {
 			System.out.println("Got Exception!");
 			System.err.println(e.getMessage());
+			queryStatus = false;
+			return queryStatus;
 		}
 	}
 	
