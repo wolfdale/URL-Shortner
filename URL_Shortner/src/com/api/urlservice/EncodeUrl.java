@@ -34,22 +34,22 @@ public class EncodeUrl {
 			md.update(url.getBytes(),0,url.length());
 			encodedUrl = new BigInteger(1,md.digest()).toString(16);
 		}catch (NoSuchAlgorithmException e) {
-			System.err.println(e.getMessage());
-		}
-	
-		boolean ifEntryPresent = checkEntryInDatabase(url);
-		
-		if(ifEntryPresent) {
 			ErrorHandler err = new ErrorHandler();
-			err.setErrMsg("URL is already present.");
+			err.setErrMsg("Problem Encoding Url.");
 			return Response.ok(err).build();
 		}
+		String fullEncodedUrl = "http://localhost:8080/URL_Shortner/" + encodedUrl.substring(5, 12);
+		EncodeUrlResponse sendResponse = checkEntryInDatabase(url);
+		
+		if(sendResponse != null) {
+			return Response.ok(sendResponse).build();
+		}
 		else{
-			boolean status = setEntryInDatabase(url, encodedUrl.substring(5, 12));
+			boolean status = setEntryInDatabase(url, fullEncodedUrl);
 			if(status) {
-				EncodeUrlResponse sendResponse = new EncodeUrlResponse();
-				sendResponse.setEncodedUrl(encodedUrl.substring(5,12));
-				return Response.ok(sendResponse).build();
+				EncodeUrlResponse sendResp = new EncodeUrlResponse();
+				sendResp.setEncodedUrl(fullEncodedUrl);
+				return Response.ok(sendResp).build();
 			}
 			else {
 				ErrorHandler err = new ErrorHandler();
@@ -87,9 +87,9 @@ public class EncodeUrl {
 		}
 	}
 	
-	//Refactor this code for error handling
-	private synchronized boolean checkEntryInDatabase(final String Url) {
-		final String CHECK_ENTRY_QUERY = "SELECT COUNT FROM url_info WHERE url = ?;";
+	
+	private synchronized EncodeUrlResponse checkEntryInDatabase(final String Url) {
+		final String CHECK_ENTRY_QUERY = "SELECT * FROM url_info WHERE url = ?;";
 		try {
 			DatabaseConnector dbconn = new DatabaseConnector();
 			Connection conn = dbconn.getConnection();
@@ -97,10 +97,14 @@ public class EncodeUrl {
 			preparedStmt.setString(1, Url);
 			ResultSet rs = preparedStmt.executeQuery();
 			if (!rs.next()) {
-				return false;
+				return null;
 			}else{
 				do{
-					return true;
+					//Get encoded url form MySql
+					//Lets not update accessed_on time and hit counter value and created on value
+					EncodeUrlResponse encodeUrlResponse = new EncodeUrlResponse();
+					encodeUrlResponse.setEncodedUrl(rs.getString("short_url"));
+					return encodeUrlResponse;
 				  }while (rs.next());
 			}
 			
@@ -108,7 +112,7 @@ public class EncodeUrl {
 			System.out.println("Got Exception!");
 			System.err.println(e.getMessage());
 		}
-		return false;
+		return null;
 		
 	}
 }
