@@ -19,7 +19,7 @@ import com.api.utils.UrlEncodeDecodeJSON;
 
 import redis.clients.jedis.Jedis;
 
-@Path("/")
+@Path("/admin")
 public class DecodeUrl {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

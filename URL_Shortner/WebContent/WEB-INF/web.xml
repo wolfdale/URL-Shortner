@@ -29,8 +29,12 @@
 		<servlet-name>DecodeUrl</servlet-name>
 		<servlet-class>com.api.urlservice.DecodeUrl</servlet-class>
 	</servlet>
+		<servlet>
+		<servlet-name>RedirectUrl</servlet-name>
+		<servlet-class>com.api.urlservice.RedirectUrlService</servlet-class>
+	</servlet>
 	<servlet-mapping>
 		<servlet-name>URL_Shortner</servlet-name>
 		<url-pattern>/*</url-pattern>
-	</servlet-mapping>
+	</servlet-mapping> 
 </web-app>
